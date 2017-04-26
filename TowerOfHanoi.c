@@ -66,22 +66,16 @@ void drawPole(int poleNum){
 	switch(poleNum){
 		case 1:
 			ptr = pole1;
-			while(ptr!=NULL){
-				len++; ptr = ptr->next;
-			}
 			break;
 		case 2:
 			ptr = pole2;
-			while(ptr!=NULL){
-				len++; ptr = ptr->next;
-			}
 			break;
 		case 3:
 			ptr = pole3;
-			while(ptr!=NULL){
-				len++; ptr = ptr->next;
-			}
 			break;
+	}
+	while(ptr!=NULL){
+		len++; ptr = ptr->next;
 	}
 	for(i=0; i<(16-(len*2))	; i++){
 		if(i==0){
