@@ -1,14 +1,26 @@
-//LEIS
-//MILESTONE1
-#include<stdio.h>
-#include<stdlib.h>
 
-#define disk1 5
-#define disk2 11
-#define disk3 16
-#define disk4 21
-#define disk5 26
-#define disk6 31
+#include "../../sdk/dexsdk.h"
+#include "../../sdk/time.h"
+
+#define disk1 10
+#define disk2 20
+#define disk3 30
+#define disk4 40
+#define disk5 50
+#define disk6 60
+#define start '1'
+#define quit '2'
+#define easy '1'
+#define medium '2'
+#define hard '3'
+#define extreme '4'
+#define back '5'
+#define YELLOW 54
+#define PALE_YELLOW 62
+#define ROYAL_BLUE 1
+#define DARK_BLUE 8
+#define GRAY 56
+#define WHITE 63
 
 typedef struct _disk{
 	int length;
@@ -21,6 +33,8 @@ typedef struct _pole{
 
 //Global variables
 POLE *pole1, *pole2, *pole3;
+
+void erase(int, int, int, int);
 
 void initializePoles(int difficulty){
 	int i=0, j;
@@ -59,75 +73,45 @@ void initializePoles(int difficulty){
 	}		
 }
 
-void drawPole(int poleNum){
-	int i,j, len=0;
-	POLE *ptr;
+header(int x, int y){
+	write_text("TOWER OF HANOI!",120,40,WHITE,1); //title
 
-	switch(poleNum){
-		case 1:
-			ptr = pole1;
-			break;
-		case 2:
-			ptr = pole2;
-			break;
-		case 3:
-			ptr = pole3;
-			break;
-	}
-	while(ptr!=NULL){
-		len++; ptr = ptr->next;
-	}
-	for(i=0; i<(16-(len*2))	; i++){
-		if(i==0){
-			printf("\t\t\t  -");
-		}else{
-			printf("\t\t\t | |");
-		}
-		printf("\n");
-	}
+	//menu options
+	write_text("1 - Start",40,160,WHITE,0); 
+	write_text("2 - Quit",200,160,WHITE,0);
 }
 
-void drawBox(int length){
-	int i=0, j=0, k=0, l;
-	for(i=0; i<3; i++){
-		switch(length){
-			case disk1:
-				for(l=0; l<23; l++) printf(" ");
-				break;
-			case disk2:
-				for(l=0; l<20; l++) printf(" ");
-				break;
-			case disk3:
-				for(l=0; l<18; l++) printf(" ");
-				break;
-			case disk4:
-				for(l=0; l<16; l++) printf(" ");
-				break;
-			case disk5:
-				for(l=0; l<13; l++) printf(" ");
-				break;
-			case disk6:
-				for(l=0; l<10; l++) printf(" ");
-				break;
+header2(int x, int y){
+	write_text("Choose Difficulty!",120,40,WHITE,1); //title
+
+	//menu options
+	write_text("1 - Easy",20,120,WHITE,0); 
+	write_text("2 - Medium",20,140,WHITE,0);
+	write_text("3 - Hard",200,120,WHITE,0); 
+	write_text("4 - Extreme",200,140,WHITE,0);
+	write_text("5 - Back",100,160,WHITE,0);
+}
+
+void drawBox(int y, int x, int center){
+	int i=0, j=0;
+	for(i=center; i>(center-x); i--){
+		for(j=y; j<(y+20); j++){
+			write_pixel(i, j, YELLOW);
 		}
-		if(i==0 || i==2){
-			for(j=0; j<length; j++){
-				j==0?printf(" -"):printf("-");
-			}
-		}else{
-			printf("|");
-			for(k=0; k<length; k++) printf(" ");
-			printf("|");
+	}
+	for(i=center; i<(center+x); i++){
+		for(j=y; j<(y+20); j++){
+			write_pixel(i, j, YELLOW);
 		}
-		printf("\n");
 	}
 }
 
 int play(int difficulty){
+	char keypress = 1;
 	pole1 = NULL;
 	pole2 = NULL;
 	pole3 = NULL;
-	int i, count=0, lengthCheck=0, poleNum=0, poleDest=0, flag=1;
+	int i, count=0, lengthCheck=0, poleNum=0, poleDest=0, flag=1, y=0;
 	initializePoles(difficulty);
 	POLE *ptr1 = pole1;
 	POLE *ptr2 = pole2;
@@ -139,36 +123,44 @@ int play(int difficulty){
 		ptr1 = pole1;
 		ptr2 = pole2;
 		ptr3 = pole3;
+		erase(1,1,120,220);
+		drawPole();
 
-		drawPole(1);
+		y = 0;
 		while(ptr1!=NULL){
-			drawBox(ptr1->disk.length);
+			drawBox(y, ptr1->disk.length, 50);
 			ptr1 = ptr1->next;
+			y+=20;
 		}
-		printf("\t\t\tPOLE 1\n\n");
 
-		drawPole(2);
+		y = 0;
 		while(ptr2!=NULL){
-			drawBox(ptr2->disk.length);
+			drawBox(y, ptr2->disk.length, 160);
 			ptr2 = ptr2->next;
+			y+=20;
 		}
-		printf("\t\t\tPOLE 2\n\n");
 
-		drawPole(3);
+		y = 0;
 		while(ptr3!=NULL){
-			drawBox(ptr3->disk.length);
+			drawBox(y, ptr3->disk.length, 270);
 			ptr3 = ptr3->next;
+			y+=20;
 		}
-		printf("\t\t\tPOLE 3\n\n");
 
 		if(count==(difficulty+1)){
-			printf("\n\nYOU WIN \n\n");
+			erase(1,1,400,220);
+			write_text("YOU WIN!",120,40,WHITE,1);
 			return 0;
 		}
 	
+		
 		while(1){
-			printf("Enter pole number to pick disk: ");
-			scanf("%d", &poleNum);
+			erase(1,121,400,220);
+			write_text("Pick a pole from disk no.: ", 20, 140, WHITE, 0);
+			keypress = (char)getch();
+			erase(1,121,400,220);
+
+			poleNum = (keypress - '0');
 			if(poleNum==1){
 				if(pole1!=NULL){
 					lengthCheck = pole1->disk.length;
@@ -189,13 +181,22 @@ int play(int difficulty){
 				}
 				else continue;
 			}else{
-				printf("Invalid pole!\n");
+				erase(1,121,400,220);
+				write_text("Invalid pole! ", 20, 140, WHITE, 0);
+				erase(1,121,400,220);
+				//printf("Invalid pole!\n");
 			}
 
 		}
 		while(1){
-			printf("Enter pole number to place disk: ");
-			scanf("%d", &poleDest);
+			erase(1,121,400,220);
+			write_text("Place disk to pole no.: ", 20, 140, WHITE, 0);
+			keypress = (char)getch();
+			erase(1,121,400,220);
+
+			poleDest = (keypress - '0');
+			//printf("Enter pole number to place disk: ");
+			//scanf("%d", &poleDest);
 			if(poleNum == poleDest){
 				flag = 0;
 				break;
@@ -203,25 +204,43 @@ int play(int difficulty){
 			if(poleDest==1){
 				if(pole1!=NULL){
 					if(pole1->disk.length > lengthCheck) break;
-					else printf("Not a valid move\n");
+					else{
+						erase(1,121,400,220); 
+						write_text("Not a valid move! ", 20, 140, WHITE, 0); 
+						erase(1,121,400,220);
+					}	
+						//printf("Not a valid move\n");
 					
 				}
 				else break;
 			}else if(poleDest==2){
 				if(pole2!=NULL){
 					if(pole2->disk.length > lengthCheck) break;
-					else printf("Not a valid move\n");
+					else{
+						erase(1,121,400,220);
+						write_text("Not a valid move! ", 20, 140, WHITE, 0);
+						erase(1,121,400,220);	
+					} 
+						//printf("Not a valid move\n");
 				}
 				else break;
 			}
 			else if(poleDest==3){
 				if(pole3!=NULL){
 					if(pole3->disk.length > lengthCheck) break;
-					else printf("Not a valid move\n");
+					else{
+						erase(1,121,400,220);
+						write_text("Not a valid move! ", 20, 140, WHITE, 0);
+						erase(1,121,400,220);
+					}	
+					//printf("Not a valid move\n");
 				}
 				else break;
 			}else{
-				printf("Invalid pole!\n");
+				erase(1,121,400,220);
+				write_text("Invalid Pole! ", 20, 140, WHITE, 0);
+				erase(1,121,400,220);
+				//printf("Invalid pole!\n");
 			}
 		}
 		if(flag){
@@ -278,32 +297,77 @@ int play(int difficulty){
 	}	
 }
 
-int main(){
-	int choice;
-	while(1){
-		printf("WELCOME TO TOWER OF HANOI\n1. PLAY\n2. EXIT\nEnter choice:");
-		scanf("%d", &choice);
-
-		if(choice==1){
-			printf("Pick Difficulty\n1. Easy\n2. Medium\n3. Difficult\n4. Extreme\nEnter choice:");
-			scanf("%d", &choice);
-			switch(choice){
-				case 1:
-					play(2);
-					break;
-				case 2:
-					play(3);
-					break;
-				case 3:
-					play(4);
-					break;
-				case 4:
-					play(5);
-					break;
-			}
-		}else{
-			return 0;
+drawPole(){
+	int i, j, k;
+	for(i=40; i<60; i++){
+		for(j=0; j<120; j++){
+			write_pixel(i,j,GRAY);
 		}
 	}
+	for(i=150; i<170; i++){
+		for(j=0; j<120; j++){
+			write_pixel(i,j,GRAY);
+		}
+	}
+	for(i=260; i<280; i++){
+		for(j=0; j<120; j++){
+			write_pixel(i,j,GRAY);
+		}
+	}
+}
+
+int main(){
+	int i = 0;
+	set_graphics(VGA_320X200X256);
+	char keypress = start;
+	char keypress2 = easy;
+
+	do{
+		erase(1, 1, 400, 220);
+		header(8,5);
+
+		keypress = (char)getch();
+		erase(1,1,400,220);
+
+		if(keypress==start){
+			do{
+				erase(1,1,400,220);
+				header2(8,5);
+				keypress2 = (char)getch();
+				erase(1,1,400,220);
+
+				switch(keypress2){
+					case easy:
+						erase(1,1,400,220);
+						play(2);
+						break;
+					case medium:
+						erase(1,1,400,220);
+						play(3);
+						break;
+					case hard:
+						erase(1,1,400,220);
+						play(4);
+						break;
+					case extreme:
+						erase(1,1,400,220);
+						play(5);
+						break;
+					default:
+						break;
+				}
+			}while(keypress2 != back);
+		}else{
+
+		}
+	}while(keypress != quit);
+
 	return 0;
+}
+
+void erase(int x, int y, int w, int h){ //basically covers an area with a black rectangle 
+   int i,j;
+   for (i=y;i<=(y+h);i++)
+      for (j=x;j<=(x+w);j++)
+         write_pixel(j,i,100);
 }
