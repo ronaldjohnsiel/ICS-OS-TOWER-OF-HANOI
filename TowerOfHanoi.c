@@ -337,20 +337,17 @@ int main(){
 				erase(1,1,400,220);
 
 				switch(keypress2){
+					erase(1,1,400,220);
 					case easy:
-						erase(1,1,400,220);
 						play(2);
 						break;
 					case medium:
-						erase(1,1,400,220);
 						play(3);
 						break;
 					case hard:
-						erase(1,1,400,220);
 						play(4);
 						break;
 					case extreme:
-						erase(1,1,400,220);
 						play(5);
 						break;
 					default:
